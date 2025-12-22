@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket 测试页面</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .input-area {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #messageInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        #messageInput:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .connect-button {
+            background-color: #2196F3;
+        }
+        
+        .connect-button:hover {
+            background-color: #1976D2;
+        }
+        
+        .disconnect-button {
+            background-color: #f44336;
+        }
+        
+        .disconnect-button:hover {
+            background-color: #d32f2f;
+        }
+        
+        .send-button {
+            background-color: #4CAF50;
+        }
+        
+        .send-button:hover {
+            background-color: #45a049;
+        }
+        
+        .clear-button {
+            background-color: #FF9800;
+        }
+        
+        .clear-button:hover {
+            background-color: #F57C00;
+        }
+        
+        .btn:disabled {
+            background-color: #BBDEFB;
+            cursor: not-allowed;
+        }
+        
+        .messages-container {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        #messages {
+            font-size: 14px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        
+        .client-message {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .server-message {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .message-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .connection-status {
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .connected {
+            background-color: #c8e6c9;
+            color: #388e3c;
+        }
+        
+        .disconnected {
+            background-color: #ffcdd2;
+            color: #f44336;
+        }
+        
+        .connecting {
+            background-color: #fff9c4;
+            color: #f57f17;
+        }
+        
+        @media (max-width: 600px) {
+            .input-area {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>WebSocket 实时通信测试</h1>
+        </div>
+        
+        <div id="connectionStatus" class="connection-status disconnected">
+            连接状态: 未连接
+        </div>
+        
+        <div class="input-area">
+            <button id="connectButton" class="btn connect-button" onclick="connectWebSocket()">连接</button>
+            <button id="disconnectButton" class="btn disconnect-button" onclick="disconnectWebSocket()" disabled>断开</button>
+            <button id="clearButton" class="btn clear-button" onclick="clearMessages()" disabled>清屏</button>
+            <input type="text" id="messageInput" placeholder="请输入要发送的消息..." disabled>
+            <button id="sendButton" class="btn send-button" onclick="sendMessage()" disabled>发送</button>
+        </div>
+        
+        <div class="messages-container">
+            <div id="messages"></div>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        const connectionStatus = document.getElementById('connectionStatus');
+        const messagesContainer = document.querySelector('.messages-container');
+        const connectButton = document.getElementById('connectButton');
+        const disconnectButton = document.getElementById('disconnectButton');
+        const clearButton = document.getElementById('clearButton');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        // 更新连接状态显示
+        function updateConnectionStatus(connected, connecting = false) {
+            if (connecting) {
+                connectionStatus.textContent = '连接状态: 连接中...';
+                connectionStatus.className = 'connection-status connecting';
+                connectButton.disabled = true;
+                connectButton.textContent = '连接中...';
+                disconnectButton.disabled = true;
+            } else if (connected) {
+                connectionStatus.textContent = '连接状态: 已连接';
+                connectionStatus.className = 'connection-status connected';
+                connectButton.disabled = true;
+                connectButton.textContent = '已连接';
+                disconnectButton.disabled = false;
+                clearButton.disabled = false;
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+            } else {
+                connectionStatus.textContent = '连接状态: 未连接';
+                connectionStatus.className = 'connection-status disconnected';
+                connectButton.disabled = false;
+                connectButton.textContent = '连接';
+                disconnectButton.disabled = true;
+                clearButton.disabled = true;
+                messageInput.disabled = true;
+                sendButton.disabled = true;
+            }
+        }
+
+        function connectWebSocket() {
+            // 如果已经连接，则不需要重新连接
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                return;
+            }
+            
+            // 更新状态为连接中
+            updateConnectionStatus(false, true);
+            
+            // 创建WebSocket连接
+            socket = new WebSocket('ws://localhost:8081/boot/ws');
+            
+            socket.addEventListener('open', function (event) {
+                console.log('连接打开');
+                updateConnectionStatus(true);
+                addMessage('系统', '连接已建立', 'server');
+            });
+
+            socket.addEventListener('message', function (event) {
+                console.log('收到消息: ', event.data);
+                addMessage('服务器', event.data, 'server');
+            });
+
+            socket.addEventListener('close', function (event) {
+                console.log('连接关闭');
+                updateConnectionStatus(false);
+                addMessage('系统', '连接已断开', 'server');
+            });
+            
+            socket.addEventListener('error', function (event) {
+                console.log('连接错误');
+                updateConnectionStatus(false);
+                addMessage('系统', '连接发生错误', 'server');
+            });
+        }
+        
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.close();
+            }
+        }
+        
+        function clearMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            console.log('消息已清空');
+        }
+
+        function addMessage(sender, message, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}-message`;
+            
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            messageElement.innerHTML = `
+                <div class="message-header">${sender} <span style="float: right; font-weight: normal;">${timeString}</span></div>
+                <div>${message}</div>
+            `;
+            
+            messagesDiv.appendChild(messageElement);
+            
+            // 滚动到底部
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = messageInput.value;
+            if (message.trim() !== '' && socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+                addMessage('客户端', message, 'client');
+                messageInput.value = ''; // 清空输入框
+            } else if (!socket || socket.readyState !== WebSocket.OPEN) {
+                alert('连接未建立，请先建立连接');
+            }
+        }
+
+        // 添加回车键发送功能
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 页面加载完成后聚焦到输入框
+        window.addEventListener('load', function() {
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>

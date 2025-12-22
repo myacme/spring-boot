@@ -1,0 +1,14 @@
+##日志配置
+logging:
+  config: classpath:logback.xml
+
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  config-location: classpath:mybatis-config.xml
+  mapper-locations:
+    - classpath*:mapper/*Mapper.xml
+    - classpath*:mapper/*/*Mapper.xml
+  type-aliases-package: lab.captain.pwy.bean
+  executor-type: reuse
