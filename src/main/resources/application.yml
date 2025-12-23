@@ -72,6 +72,11 @@ springdoc:
 # Knife4j 配置
 knife4j:
   enable: true
+  # 配置登录认证
+#  basic:
+#    enable: true
+#    username: ljx
+#    password: ljx
   setting:
     # 显示接口统计信息
     showRequestParams: true
