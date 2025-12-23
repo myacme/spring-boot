@@ -1,38 +1,46 @@
 package com.example.boot.multdatasources;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 多数据源配置
+ *
+ * @author ljx
+ * @version 1.0.0
+ * @create 2025/12/23 15:07
+ */
 @Configuration
 public class DataSourceConfiguration {
 
+    @Autowired
+    private DataSourceBuilder dataSourceBuilder;
+
+
     @Bean
-    @Primary
     public DataSource dynamicDataSource() {
-        DynamicDataSource dynamicDataSource = new DynamicDataSource();
-
         Map<Object, Object> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("sharding_db_0", createDataSource("sharding_db_0"));
-        dataSourceMap.put("sharding_db_1", createDataSource("sharding_db_1"));
+        dataSourceMap.put("master", dataSourceBuilder.getMasterDataSource());
+        dataSourceMap.put("slave0", dataSourceBuilder.getSlave0DataSource());
+        dataSourceMap.put("slave1", dataSourceBuilder.getSlave1DataSource());
 
+        DynamicDataSource dynamicDataSource = new DynamicDataSource();
+        // 设置默认数据源
+        dynamicDataSource.setDefaultTargetDataSource(dataSourceMap.get("master"));
+        // 设置所有数据源
         dynamicDataSource.setTargetDataSources(dataSourceMap);
-        dynamicDataSource.setDefaultTargetDataSource(createDataSource("sharding_db_0"));
-
         return dynamicDataSource;
     }
 
-    private DataSource createDataSource(String dbName) {
-        // 创建具体数据源实例
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/" + dbName);
-        dataSource.setUsername("root");
-        dataSource.setPassword("mysql@1qaz");
-        return dataSource;
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dynamicDataSource());
     }
 }

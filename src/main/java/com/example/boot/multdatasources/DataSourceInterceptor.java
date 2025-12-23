@@ -5,9 +5,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 
 /**
- *
+ * 数据源拦截器
  *
  * @author ljx
  * @version 1.0.0
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class DataSourceInterceptor implements HandlerInterceptor {
+
     
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -36,6 +38,7 @@ public class DataSourceInterceptor implements HandlerInterceptor {
     
     private String extractUserDbFromRequest(HttpServletRequest request) {
         // header中获取 db
+        Enumeration<String> headerNames = request.getHeaderNames();
         return request.getHeader("db");
     }
 }

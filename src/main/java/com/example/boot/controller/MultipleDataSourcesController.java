@@ -3,8 +3,8 @@ package com.example.boot.controller;
 
 import com.example.boot.bean.Result;
 import com.example.boot.bean.UserPO;
-
 import com.example.boot.sevice.MultipleDataSourcesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MultipleDataSourcesController {
 
     private final MultipleDataSourcesService multipleDataSourcesService;
-
+    @Autowired
     public MultipleDataSourcesController(MultipleDataSourcesService multipleDataSourcesService) {
         this.multipleDataSourcesService = multipleDataSourcesService;
     }

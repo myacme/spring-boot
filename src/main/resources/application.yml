@@ -20,12 +20,12 @@ spring:
           username: root
           password: mysql@1qaz
           driver-class-name: com.mysql.cj.jdbc.Driver
-        slave1:
+        slave0:
           url: jdbc:mysql://localhost:3306/sharding_db_0
           username: root
           password: mysql@1qaz
           driver-class-name: com.mysql.cj.jdbc.Driver
-        slave2:
+        slave1:
           url: jdbc:mysql://localhost:3306/sharding_db_1
           username: root
           password: mysql@1qaz
