@@ -20,14 +20,5 @@ public interface MyMapper {
     int insert(int v);
     int insert1(int v);
 
-    /**
-     * 动态数据源  根据 dsName  动态连接数据库
-     * @param dsName
-     * @param tableName
-     * @return
-     */
-    @DS("#dsName") // 使用SpEL表达式动态指定数据源
-    @Select("SELECT * FROM ${tableName}")
-    List<User> selectByDynamicDS(@Param("dsName") String dsName, @Param("tableName") String tableName);
 
 }

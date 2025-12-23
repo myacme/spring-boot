@@ -12,27 +12,26 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 测试接口
+ * 事务测试
  *
  * @author ljx
  * @version 1.0.0
- * @create 2022/7/6 9:24
+ * @create 2025/12/22 13:32
  */
-@Tag(name = "测试接口", description = "测试接口")
+@Tag(name = "事务测试", description = "事务测试")
 @RestController
-@Log("test")
-public class MyController {
+@Log("transanction")
+public class TransanctionController {
 
-    @Resource
-    private MySevice mySevice;
+    @Resource(name = "multiThreadTransaction")
+    private TransactionSevice transactionSevice;
 
-    @Operation(summary = "hello", description = "hello")
-    @GetMapping("/hello")
-    //    @Log("hello")
-    public String helloAop(String name) {
+    @Operation(summary = "测试事务", description = "测试事务")
+    @GetMapping("/test")
+    public String testTransaction() {
         try {
-            mySevice.helloAop(name);
-            return "hello! " + name;
+            transactionSevice.testTransaction();
+            return "success";
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
