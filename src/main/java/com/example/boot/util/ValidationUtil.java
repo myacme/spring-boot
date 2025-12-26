@@ -13,9 +13,9 @@ import java.util.regex.Pattern;
 public class ValidationUtil {
 
 	public static boolean isMobile(String str) {
-		Pattern p = null;
-		Matcher m = null;
-		boolean b = false;
+		Pattern p;
+		Matcher m;
+		boolean b;
 		p = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
 		m = p.matcher(str);
 		b = m.matches();

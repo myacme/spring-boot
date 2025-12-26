@@ -4,10 +4,9 @@ package com.example.boot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 /**
- * 项目启动加载所有的稽核定时任务
+ * 启动时执行类
  *
  * @author ljx
  * @version 1.0.0
@@ -20,6 +19,6 @@ public class CommandLineRunnerDemo implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		logger.info("加载所有的稽核定时任务");
+		logger.info("项目启动时时启动类");
 	}
 }

@@ -45,7 +45,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 				log.info("token解析错误");
 				return false;
 			}
-			if (LoginUserUtil.verifyLoginUser(IpUtil.getIpAddr(request), JwtTokenUtil.getSubject(token))) {
+			if (LoginUserUtil.verifyLoginUser(IpUtil.getClientIp(request), JwtTokenUtil.getSubject(token))) {
 				response.getWriter().println(JacksonUtil.getJsonString("未登录，请先登录"));
 				log.info("未登录，请先登录");
 				return false;
