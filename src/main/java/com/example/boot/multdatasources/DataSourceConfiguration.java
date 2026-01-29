@@ -2,7 +2,6 @@ package com.example.boot.multdatasources;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -17,7 +16,7 @@ import java.util.Map;
  * @version 1.0.0
  * @create 2025/12/23 15:07
  */
-@Configuration
+//@Configuration
 public class DataSourceConfiguration {
 
     @Autowired

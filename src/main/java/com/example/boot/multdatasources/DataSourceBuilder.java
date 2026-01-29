@@ -4,7 +4,6 @@ package com.example.boot.multdatasources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0.0
  * @create 2025/12/23 16:08
  */
-@Component
+//@Component
 public class DataSourceBuilder {
 
     private final Environment env;

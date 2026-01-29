@@ -1,6 +1,5 @@
 package com.example.boot.multdatasources;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,7 @@ import java.util.Enumeration;
  * @version 1.0.0
  * @create 2025/12/22 14:35
  */
-@Component
+//@Component
 public class DataSourceInterceptor implements HandlerInterceptor {
 
     

@@ -7,14 +7,24 @@ spring:
   profiles:
     active: dev
   datasource:
-#    url: jdbc:mysql://192.168.2.201:32265/portal_dev?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&allowMultiQueries=true
-#    username: dldp_dev
-#    password: dldp@2021
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    # 多数据源
+    #    url: jdbc:mysql://192.168.2.201:32265/portal_dev?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&allowMultiQueries=true
+    #    username: dldp_dev
+    #    password: dldp@2021
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    # 多数据源
     dynamic:
-      primary: master # 设置默认数据源
+      primary: mysql # 设置默认数据源
       datasource:
+        mysql:
+          url: jdbc:mysql://192.168.75.131:3306/mydb
+          username: root
+          password: mysql@1qaz
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        postgres:
+          url: jdbc:postgresql://192.168.75.131:5432/mydb?currentSchema=public
+          username: postgres
+          password: postgres@1qaz
+          driver-class-name: org.postgresql.Driver
         master:
           url: jdbc:mysql://localhost:3306/mydb
           username: root
@@ -30,6 +40,12 @@ spring:
           username: root
           password: mysql@1qaz
           driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
 
 mybatis:
   config-location: classpath:mybatis-config.xml
@@ -37,6 +53,13 @@ mybatis:
     - classpath*:mapper/*Mapper.xml
     - classpath*:mapper/*/*Mapper.xml
   executor-type: reuse
+  #实现不同数据库不同的SQL语法
+  configuration-properties:
+    database-type: mysql
+#  database-id-provider:
+#    vendor-database-id:
+#      MySql: mysql
+#      PostgreSQL: postgres
 
 logging:
   config: classpath:logback.xml
@@ -73,10 +96,10 @@ springdoc:
 knife4j:
   enable: true
   # 配置登录认证
-#  basic:
-#    enable: true
-#    username: ljx
-#    password: ljx
+  #  basic:
+  #    enable: true
+  #    username: ljx
+  #    password: ljx
   setting:
     # 显示接口统计信息
     showRequestParams: true
